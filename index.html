@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Splits">
+<title>Splits — daily log</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --ink:#1C2333; --paper:#EDEFEA; --surface:#F8F8F5; --text:#262B36; --text-muted:#767B70;
+    --amber:#B97A1F; --amber-deep:#96631A; --teal:#3F6E68; --line:#D6D8D0; --danger:#A34B3B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--paper); }
+  body { font-family:'Space Grotesk', sans-serif; color:var(--text); -webkit-tap-highlight-color: transparent; }
+  header.app-header { padding: 28px 20px 16px; border-bottom: 2px solid var(--amber); }
+  .app-title { font-size:24px; font-weight:700; color:var(--ink); }
+  .app-tag { font-family:'Newsreader',serif; font-style:italic; color:var(--text-muted); font-size:14px; margin-top:2px; }
+  main { max-width:440px; margin:0 auto; padding:20px 16px 70px; }
+
+  .form-card { background:var(--surface); border-left:3px solid var(--amber); border-radius:6px; padding:16px 16px 14px; }
+  .form-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; font-weight:500; font-size:15px; }
+  .date-row { display:flex; align-items:center; gap:6px; }
+  .date-row .input { flex:1; min-width:0; }
+  .label { font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px; margin-top:12px; }
+  .label.first { margin-top:0; }
+  .input, .textarea { width:100%; background:#fff; border:1px solid var(--line); color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:14px; padding:8px 10px; border-radius:6px; outline:none; }
+  .textarea { font-family:'Newsreader',serif; font-style:italic; font-size:15px; resize:vertical; }
+  .input:focus, .textarea:focus { border-color:var(--amber); box-shadow:0 0 0 3px rgba(185,122,31,0.15); }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .suffix-wrap { position:relative; }
+  .suffix { position:absolute; right:10px; top:8px; font-size:12px; color:var(--text-muted); pointer-events:none; }
+  .hint { font-family:'Newsreader',serif; font-style:italic; font-size:13px; color:var(--text-muted); margin-top:6px; }
+
+  .btn-primary { background:var(--amber); color:#FFF9F0; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:14px; border:none; border-radius:6px; padding:10px 18px; cursor:pointer; transition:background 150ms ease; display:inline-flex; align-items:center; gap:6px; }
+  .btn-primary:hover { background:var(--amber-deep); }
+  .btn-ghost { background:transparent; color:var(--text-muted); font-family:'Space Grotesk',sans-serif; font-size:13px; border:none; padding:8px 6px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  .icon-btn { background:transparent; border:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--text-muted); display:inline-flex; align-items:center; justify-content:center; }
+  .icon-btn:hover { background:rgba(0,0,0,0.05); color:var(--text); }
+  .nav-btn { background:#fff; border:1px solid var(--line); border-radius:6px; width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; color:var(--text-muted); cursor:pointer; flex-shrink:0; }
+  .nav-btn:hover { color:var(--text); }
+
+  .tabbar { display:flex; align-items:center; gap:18px; margin-top:26px; border-bottom:1px solid var(--line); }
+  .tab { background:transparent; border:none; border-bottom:2px solid transparent; font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--text-muted); padding:10px 2px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+  .tab.active { color:var(--ink); border-bottom-color:var(--amber); font-weight:500; }
+
+  .week { margin-top:14px; }
+  .week-head { display:flex; align-items:flex-start; justify-content:space-between; cursor:pointer; padding:8px 2px; border-radius:6px; }
+  .week-head:hover { background:rgba(0,0,0,0.03); }
+  .week-title { font-weight:500; font-size:14px; color:var(--ink); }
+  .week-sub { font-size:12px; color:var(--text-muted); margin-top:3px; line-height:1.5; }
+  .week-body { border-left:2px solid var(--line); margin-left:6px; padding-left:12px; }
+  .chev { transition: transform 150ms ease; }
+  .chev.open { transform: rotate(90deg); }
+
+  .entry-row { padding:12px 0; }
+  .entry-row + .entry-row { border-top:1px solid var(--line); }
+  .entry-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .entry-date { font-weight:500; font-size:14px; color:var(--ink); cursor:pointer; }
+  .entry-actions { display:flex; gap:2px; margin-top:-4px; }
+  .entry-stats { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:6px; }
+  .stat-value { font-size:14px; font-weight:500; color:var(--text); }
+  .stat-label { font-size:11px; color:var(--text-muted); }
+  .entry-detail { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .entry-notes { font-family:'Newsreader',serif; font-style:italic; font-size:14px; margin-top:6px; color:var(--text); }
+  .empty-msg { font-family:'Newsreader',serif; font-style:italic; color:var(--text-muted); padding:24px 0; }
+
+  .chart-block { margin-bottom:30px; }
+  .chart-title { font-weight:500; font-size:14px; margin-bottom:8px; }
+  .legend { display:flex; gap:14px; margin-bottom:8px; font-size:12px; color:var(--text-muted); }
+  .legend .dot { width:8px; height:8px; border-radius:4px; display:inline-block; margin-right:5px; }
+  svg.chart-svg { width:100%; height:auto; display:block; }
+
+  .data-row { margin-top:40px; padding-top:14px; border-top:1px solid var(--line); display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .data-row .note { font-family:'Newsreader',serif; font-style:italic; font-size:12px; color:var(--text-muted); width:100%; }
+
+  .hidden { display:none !important; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; font-size:13px; padding:10px 16px; border-radius:20px; opacity:0; transition:opacity 200ms ease; pointer-events:none; z-index:10; max-width:90vw; text-align:center; }
+  .toast.show { opacity:1; }
+  .error-msg { font-size:12px; color:var(--danger); margin-top:10px; }
+  .row { display:flex; }
+  .btn-primary:focus-visible, .btn-ghost:focus-visible, .icon-btn:focus-visible, .tab:focus-visible, .nav-btn:focus-visible, .input:focus-visible, .textarea:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="app-title">Splits</div>
+  <div class="app-tag">calories, weight and running — logged daily</div>
+</header>
+
+<main>
+  <section class="form-card" id="formCard">
+    <div class="form-head">
+      <span id="formTitle">New entry</span>
+      <button id="todayBtn" class="btn-ghost hidden">jump to today</button>
+    </div>
+
+    <label class="label first" for="dateInput">Date</label>
+    <div class="date-row">
+      <button class="nav-btn" id="prevDayBtn" aria-label="Previous day"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <input id="dateInput" type="date" class="input">
+      <button class="nav-btn" id="nextDayBtn" aria-label="Next day"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label class="label" for="calIn">Calories</label>
+        <input id="calIn" type="number" inputmode="numeric" min="0" class="input" placeholder="e.g. 1900">
+      </div>
+      <div>
+        <label class="label" for="calOut">Burned exercising</label>
+        <input id="calOut" type="number" inputmode="numeric" min="0" class="input" placeholder="e.g. 400">
+      </div>
+    </div>
+
+    <label class="label">Weight</label>
+    <div class="grid-2">
+      <div class="suffix-wrap">
+        <input id="wStone" type="number" inputmode="numeric" min="0" class="input" placeholder="11" aria-label="Stone">
+        <span class="suffix">st</span>
+      </div>
+      <div class="suffix-wrap">
+        <input id="wLb" type="number" inputmode="numeric" min="0" max="13" class="input" placeholder="6" aria-label="Pounds">
+        <span class="suffix">lb</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label class="label" for="exMin">Exercise time</label>
+        <div class="suffix-wrap">
+          <input id="exMin" type="number" inputmode="numeric" min="0" class="input" placeholder="0">
+          <span class="suffix">min</span>
+        </div>
+      </div>
+      <div>
+        <label class="label" for="runKm">Distance run</label>
+        <div class="suffix-wrap">
+          <input id="runKm" type="number" inputmode="decimal" min="0" step="0.1" class="input" placeholder="0">
+          <span class="suffix">km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label class="label" for="walkMin">Walked</label>
+        <div class="suffix-wrap">
+          <input id="walkMin" type="number" inputmode="numeric" min="0" class="input" placeholder="0">
+          <span class="suffix">min</span>
+        </div>
+      </div>
+      <div>
+        <label class="label" for="contMin">Continuous run</label>
+        <div class="suffix-wrap">
+          <input id="contMin" type="number" inputmode="numeric" min="0" class="input" placeholder="0">
+          <span class="suffix">min</span>
+        </div>
+      </div>
+    </div>
+    <div id="exHint" class="hint hidden"></div>
+
+    <label class="label" for="notesInput">Notes</label>
+    <textarea id="notesInput" class="textarea" rows="3" placeholder="How did it feel today?"></textarea>
+
+    <div class="row" style="margin-top:14px; align-items:center; gap:12px;">
+      <button id="saveBtn" class="btn-primary">Save entry</button>
+      <button id="clearBtn" class="btn-ghost hidden">clear</button>
+    </div>
+    <div id="errorMsg" class="error-msg hidden"></div>
+  </section>
+
+  <div class="tabbar">
+    <button id="tabLog" class="tab active">Log <span id="entryCount"></span></button>
+    <button id="tabTrends" class="tab">Trends</button>
+    <button id="shareAllBtn" class="tab" style="margin-left:auto;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+      Share all
+    </button>
+  </div>
+
+  <div id="logView"></div>
+  <div id="trendsView" class="hidden"></div>
+
+  <div class="data-row">
+    <button id="backupBtn" class="btn-ghost">back up data</button>
+    <button id="restoreBtn" class="btn-ghost">restore from backup</button>
+    <input id="restoreFile" type="file" accept="application/json,.json" class="hidden">
+    <div class="note">Entries live on this phone. Back up now and then so a cleared browser or a new phone doesn't lose the log.</div>
+  </div>
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'splits-log-entries-v2';
+  const LEGACY_KEY  = 'splits-log-entries-v1';
+
+  const ICONS = {
+    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    trash:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
+    share:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+    check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>',
+    chev:   '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>'
+  };
+
+  // ---------- helpers ----------
+  const pad2 = n => String(n).padStart(2,'0');
+  const toDateStr = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  const todayStr = () => toDateStr(new Date());
+  function parseDateLocal(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+  function addDays(s,n){ const d=parseDateLocal(s); d.setDate(d.getDate()+n); return toDateStr(d); }
+  function weekStart(s){ const d=parseDateLocal(s); d.setDate(d.getDate()-((d.getDay()+6)%7)); return toDateStr(d); } // Monday
+  function formatDateShort(s){ return parseDateLocal(s).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'}); }
+  function formatDateTiny(s){ return parseDateLocal(s).toLocaleDateString(undefined,{day:'numeric',month:'short'}); }
+  function weekLabel(start){ return `${formatDateTiny(start)} – ${formatDateTiny(addDays(start,6))}`; }
+  function parseNum(v){ if(v===''||v===null||v===undefined) return null; const n=Number(v); return Number.isFinite(n)?n:null; }
+  function hasWeight(e){ return e.weightStone!==null || e.weightLb!==null; }
+  function weightDecimal(e){ return hasWeight(e) ? (e.weightStone||0)+(e.weightLb||0)/14 : null; }
+  function weightLabel(e){ return hasWeight(e) ? `${e.weightStone||0}st ${e.weightLb||0}lb` : '—'; }
+  function decimalToLabel(dec){ let st=Math.floor(dec); let lb=Math.round((dec-st)*14); if(lb===14){st+=1;lb=0;} return `${st}st${lb}`; }
+  function exerciseMin(e){ if (e.exerciseMin!==null) return e.exerciseMin; const s=(e.walkMin||0)+(e.contRunMin||0); return s>0?s:null; }
+  function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function emptyDraft(date){ return {date, caloriesIn:'', caloriesOut:'', weightStone:'', weightLb:'', exerciseMin:'', runKm:'', walkMin:'', contRunMin:'', notes:''}; }
+  function entryToDraft(e){ return {date:e.date, caloriesIn:e.caloriesIn??'', caloriesOut:e.caloriesOut??'', weightStone:e.weightStone??'', weightLb:e.weightLb??'', exerciseMin:e.exerciseMin??'', runKm:e.runKm??'', walkMin:e.walkMin??'', contRunMin:e.contRunMin??'', notes:e.notes??''}; }
+  function normaliseEntry(e){
+    return {
+      date: e.date,
+      caloriesIn: parseNum(e.caloriesIn), caloriesOut: parseNum(e.caloriesOut),
+      weightStone: parseNum(e.weightStone), weightLb: parseNum(e.weightLb),
+      exerciseMin: parseNum(e.exerciseMin), runKm: parseNum(e.runKm),
+      walkMin: parseNum(e.walkMin), contRunMin: parseNum(e.contRunMin),
+      notes: (e.notes||'').trim()
+    };
+  }
+
+  // ---------- state ----------
+  let entries = [];
+  let draft = emptyDraft(todayStr());
+  let currentTab = 'log';
+  let expandedWeeks = new Set();
+  let toastTimer = null;
+
+  function loadEntries(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { entries = JSON.parse(raw).map(normaliseEntry); return; }
+      const legacy = localStorage.getItem(LEGACY_KEY);
+      if (legacy) { entries = JSON.parse(legacy).map(normaliseEntry); persist(); }
+    } catch(e) { entries = []; }
+  }
+  function persist(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); return true; }
+    catch(e) { return false; }
+  }
+
+  // ---------- DOM ----------
+  const el = id => document.getElementById(id);
+  const dateInput=el('dateInput'), calIn=el('calIn'), calOut=el('calOut'), wStone=el('wStone'), wLb=el('wLb'),
+    exMin=el('exMin'), runKm=el('runKm'), walkMin=el('walkMin'), contMin=el('contMin'), notesInput=el('notesInput'),
+    exHint=el('exHint'), formTitle=el('formTitle'), todayBtn=el('todayBtn'), prevDayBtn=el('prevDayBtn'), nextDayBtn=el('nextDayBtn'),
+    saveBtn=el('saveBtn'), clearBtn=el('clearBtn'), errorMsg=el('errorMsg'),
+    tabLog=el('tabLog'), tabTrends=el('tabTrends'), shareAllBtn=el('shareAllBtn'),
+    logView=el('logView'), trendsView=el('trendsView'), entryCount=el('entryCount'), toast=el('toast'),
+    backupBtn=el('backupBtn'), restoreBtn=el('restoreBtn'), restoreFile=el('restoreFile');
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 2600);
+  }
+
+  // ---------- form ----------
+  const isEditingExisting = () => entries.some(e=>e.date===draft.date);
+
+  function updateExHint(){
+    const w = parseNum(draft.walkMin)||0, c = parseNum(draft.contRunMin)||0, sum = w+c;
+    exMin.placeholder = sum>0 ? String(sum) : '0';
+    if (sum>0 && draft.exerciseMin===''){ exHint.textContent = `Leave exercise time blank to use walked + continuous (${sum} min)`; exHint.classList.remove('hidden'); }
+    else exHint.classList.add('hidden');
+  }
+  function updateFormHeadState(){
+    const editing = isEditingExisting();
+    formTitle.textContent = editing ? `Editing ${formatDateShort(draft.date)}` : (draft.date===todayStr() ? 'Today' : formatDateShort(draft.date));
+    todayBtn.classList.toggle('hidden', draft.date===todayStr());
+    saveBtn.innerHTML = editing ? 'Update entry' : 'Save entry';
+  }
+  function updateClearVisibility(){
+    const d = draft;
+    const hasAny = d.notes||d.caloriesIn||d.caloriesOut||d.weightStone||d.weightLb||d.exerciseMin||d.runKm||d.walkMin||d.contRunMin;
+    clearBtn.classList.toggle('hidden', !hasAny);
+  }
+  function syncFormFromDraft(){
+    dateInput.value = draft.date;
+    calIn.value = draft.caloriesIn; calOut.value = draft.caloriesOut;
+    wStone.value = draft.weightStone; wLb.value = draft.weightLb;
+    exMin.value = draft.exerciseMin; runKm.value = draft.runKm;
+    walkMin.value = draft.walkMin; contMin.value = draft.contRunMin;
+    notesInput.value = draft.notes;
+    updateExHint(); updateFormHeadState(); updateClearVisibility();
+  }
+  function goToDate(date){
+    const existing = entries.find(e=>e.date===date);
+    draft = existing ? entryToDraft(existing) : emptyDraft(date);
+    syncFormFromDraft();
+  }
+
+  function bindField(input, key){
+    input.addEventListener('input', ()=>{
+      draft[key] = input.value;
+      if (['walkMin','contRunMin','exerciseMin'].includes(key)) updateExHint();
+      updateClearVisibility();
+    });
+  }
+  bindField(calIn,'caloriesIn'); bindField(calOut,'caloriesOut');
+  bindField(wStone,'weightStone'); bindField(wLb,'weightLb');
+  bindField(exMin,'exerciseMin'); bindField(runKm,'runKm');
+  bindField(walkMin,'walkMin'); bindField(contMin,'contRunMin');
+  notesInput.addEventListener('input', ()=>{ draft.notes = notesInput.value; updateClearVisibility(); });
+
+  dateInput.addEventListener('change', ()=> goToDate(dateInput.value || todayStr()));
+  prevDayBtn.addEventListener('click', ()=> goToDate(addDays(draft.date,-1)));
+  nextDayBtn.addEventListener('click', ()=> goToDate(addDays(draft.date,1)));
+  todayBtn.addEventListener('click', ()=> goToDate(todayStr()));
+  clearBtn.addEventListener('click', ()=>{ draft = emptyDraft(draft.date); syncFormFromDraft(); });
+
+  saveBtn.addEventListener('click', ()=>{
+    const entry = normaliseEntry(draft);
+    entries = entries.filter(e=>e.date!==entry.date);
+    entries.push(entry);
+    const ok = persist();
+    expandedWeeks.add(weekStart(entry.date));
+    updateFormHeadState();
+    renderLog(); renderTrendsIfVisible();
+    errorMsg.classList.add('hidden');
+    if (!ok){ errorMsg.textContent = "Couldn't save — storage is full or blocked in this browser."; errorMsg.classList.remove('hidden'); return; }
+    saveBtn.innerHTML = `${ICONS.check} Saved`;
+    setTimeout(updateFormHeadState, 1600);
+  });
+
+  // ---------- tabs ----------
+  tabLog.addEventListener('click', ()=> setTab('log'));
+  tabTrends.addEventListener('click', ()=> setTab('trends'));
+  function setTab(t){
+    currentTab = t;
+    tabLog.classList.toggle('active', t==='log');
+    tabTrends.classList.toggle('active', t==='trends');
+    logView.classList.toggle('hidden', t!=='log');
+    trendsView.classList.toggle('hidden', t!=='trends');
+    if (t==='trends') renderTrends();
+  }
+  const renderTrendsIfVisible = () => { if (currentTab==='trends') renderTrends(); };
+
+  // ---------- edit / delete ----------
+  function handleEdit(date){
+    goToDate(date);
+    el('formCard').scrollIntoView({behavior:'smooth'});
+  }
+  function handleDelete(date){
+    if (!confirm(`Delete the entry for ${formatDateShort(date)}?`)) return;
+    entries = entries.filter(e=>e.date!==date);
+    persist();
+    if (draft.date===date) goToDate(date);
+    renderLog(); renderTrendsIfVisible();
+  }
+
+  // ---------- text export ----------
+  function entryText(e){
+    const lines = [formatDateShort(e.date)];
+    const a = [];
+    if (e.caloriesIn!==null) a.push(`In ${e.caloriesIn} cal`);
+    if (e.caloriesOut!==null) a.push(`Burned ${e.caloriesOut} cal`);
+    if (hasWeight(e)) a.push(weightLabel(e));
+    if (a.length) lines.push(a.join('   '));
+    const b = [];
+    const ex = exerciseMin(e);
+    if (ex!==null) b.push(`Exercise ${ex} min`);
+    if (e.runKm!==null) b.push(`Ran ${fmt1(e.runKm)} km`);
+    if (e.walkMin!==null) b.push(`Walked ${e.walkMin} min`);
+    if (e.contRunMin!==null) b.push(`Continuous run ${e.contRunMin} min`);
+    if (b.length) lines.push(b.join('   '));
+    if (e.notes) lines.push(e.notes);
+    return lines.join('\n');
+  }
+  function weekText(start, days){
+    const s = weekSummary(days);
+    const lines = [`Week ${weekLabel(start)}`, `${days.length} day${days.length===1?'':'s'} logged`];
+    const a = [];
+    if (s.km>0) a.push(`Ran ${fmt1(s.km)} km`);
+    if (s.exMin>0) a.push(`Exercise ${s.exMin} min`);
+    if (s.walk>0 || s.cont>0) a.push(`(walked ${s.walk}, continuous ${s.cont})`);
+    if (a.length) lines.push(a.join('   '));
+    if (s.avgIn!==null || s.avgOut!==null) lines.push(`Avg calories ${s.avgIn!==null? s.avgIn+' in':''}${s.avgIn!==null&&s.avgOut!==null?', ':''}${s.avgOut!==null? s.avgOut+' burned':''}`);
+    if (s.wFirst) lines.push(`Weight ${weightLabel(s.wFirst)}${s.wLast && s.wLast!==s.wFirst ? ` → ${weightLabel(s.wLast)} (${s.deltaLb>0?'+':''}${s.deltaLb} lb)` : ''}`);
+    lines.push('');
+    days.forEach(d=> lines.push(entryText(d), ''));
+    return lines.join('\n').trim();
+  }
+  async function shareText(text, title){
+    if (!text){ showToast('Nothing to share yet.'); return; }
+    if (navigator.share){
+      try { await navigator.share({title: title||'Splits log', text}); return; }
+      catch(e){ if (e && e.name==='AbortError') return; }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      try { await navigator.clipboard.writeText(text); showToast('Copied. The share sheet only appears when the app is opened from an https link.'); return; }
+      catch(e){}
+    }
+    downloadBlob(new Blob([text],{type:'text/plain'}), 'splits-log.txt');
+    showToast('Downloaded as a text file');
+  }
+  function downloadBlob(blob, name){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+  shareAllBtn.addEventListener('click', ()=>{
+    const groups = groupByWeek();
+    shareText(groups.map(g=>weekText(g.start,g.days)).join('\n\n\n'), 'Splits log');
+  });
+
+  // ---------- weeks ----------
+  function weekSummary(days){
+    const sum = (fn) => days.reduce((t,e)=> t+(fn(e)||0), 0);
+    const vals = (fn) => days.map(fn).filter(v=>v!==null);
+    const avg = (fn) => { const v=vals(fn); return v.length ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : null; };
+    const weighed = days.filter(hasWeight);
+    const wFirst = weighed[0]||null, wLast = weighed[weighed.length-1]||null;
+    return {
+      km: sum(e=>e.runKm), exMin: sum(exerciseMin), walk: sum(e=>e.walkMin), cont: sum(e=>e.contRunMin),
+      avgIn: avg(e=>e.caloriesIn), avgOut: avg(e=>e.caloriesOut),
+      wFirst, wLast, deltaLb: (wFirst&&wLast) ? Math.round((weightDecimal(wLast)-weightDecimal(wFirst))*14) : 0
+    };
+  }
+  function groupByWeek(){
+    const map = new Map();
+    [...entries].sort((a,b)=> a.date<b.date?-1:1).forEach(e=>{
+      const k = weekStart(e.date);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k).push(e);
+    });
+    return [...map.entries()].map(([start,days])=>({start,days})).sort((a,b)=> a.start<b.start?1:-1);
+  }
+
+  function statSpan(value, unit){ return `<span class="stat-value">${value}${unit?`<span class="stat-label"> ${unit}</span>`:''}</span>`; }
+
+  function entryRowHtml(e){
+    const stats = [];
+    if (e.caloriesIn!==null) stats.push(statSpan(`In ${e.caloriesIn}`, 'cal'));
+    if (e.caloriesOut!==null) stats.push(statSpan(`Burned ${e.caloriesOut}`, 'cal'));
+    if (hasWeight(e)) stats.push(statSpan(weightLabel(e)));
+    if (e.runKm!==null) stats.push(statSpan(fmt1(e.runKm), 'km'));
+    const ex = exerciseMin(e);
+    if (ex!==null) stats.push(statSpan(ex, 'min'));
+    const detail = [];
+    if (e.walkMin!==null) detail.push(`walked ${e.walkMin} min`);
+    if (e.contRunMin!==null) detail.push(`continuous run ${e.contRunMin} min`);
+    return `
+      <div class="entry-row">
+        <div class="entry-top">
+          <div class="entry-date" data-action="edit" data-date="${e.date}">${formatDateShort(e.date)}</div>
+          <div class="entry-actions">
+            <button class="icon-btn" data-action="share" data-date="${e.date}" aria-label="Share entry">${ICONS.share}</button>
+            <button class="icon-btn" data-action="edit" data-date="${e.date}" aria-label="Edit entry">${ICONS.pencil}</button>
+            <button class="icon-btn" data-action="delete" data-date="${e.date}" aria-label="Delete entry">${ICONS.trash}</button>
+          </div>
+        </div>
+        ${stats.length ? `<div class="entry-stats">${stats.join('')}</div>` : ''}
+        ${detail.length ? `<div class="entry-detail">${detail.join(', ')}</div>` : ''}
+        ${e.notes ? `<div class="entry-notes">${escapeHtml(e.notes)}</div>` : ''}
+      </div>`;
+  }
+
+  function renderLog(){
+    entryCount.textContent = entries.length>0 ? `(${entries.length})` : '';
+    const groups = groupByWeek();
+    if (groups.length===0){
+      logView.innerHTML = `<div class="empty-msg">No entries yet — log today's numbers above to start the log.</div>`;
+      return;
+    }
+    const thisWeek = weekStart(todayStr());
+    if (expandedWeeks.size===0) expandedWeeks.add(groups[0].start);
+    logView.innerHTML = groups.map(g=>{
+      const s = weekSummary(g.days);
+      const open = expandedWeeks.has(g.start);
+      const bits = [`${g.days.length} day${g.days.length===1?'':'s'}`];
+      if (s.km>0) bits.push(`${fmt1(s.km)} km`);
+      if (s.exMin>0) bits.push(`${s.exMin} min`);
+      if (s.avgIn!==null) bits.push(`avg ${s.avgIn} cal`);
+      if (s.wFirst && s.wLast && s.wLast!==s.wFirst) bits.push(`${s.deltaLb>0?'+':''}${s.deltaLb} lb`);
+      return `
+        <div class="week">
+          <div class="week-head" data-action="toggle-week" data-week="${g.start}">
+            <div>
+              <div class="week-title">${g.start===thisWeek ? 'This week' : weekLabel(g.start)}</div>
+              <div class="week-sub">${g.start===thisWeek ? weekLabel(g.start)+'<br>' : ''}${bits.join('&nbsp;&nbsp;&nbsp;')}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:2px;">
+              <button class="icon-btn" data-action="share-week" data-week="${g.start}" aria-label="Share week">${ICONS.share}</button>
+              <span class="icon-btn">${ICONS.chev.replace('class="chev"', `class="chev ${open?'open':''}"`)}</span>
+            </div>
+          </div>
+          <div class="week-body ${open?'':'hidden'}">
+            ${[...g.days].reverse().map(entryRowHtml).join('')}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  logView.addEventListener('click', (ev)=>{
+    const target = ev.target.closest('[data-action]');
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    if (action==='toggle-week'){
+      const w = target.getAttribute('data-week');
+      if (expandedWeeks.has(w)) expandedWeeks.delete(w); else expandedWeeks.add(w);
+      renderLog(); return;
+    }
+    if (action==='share-week'){
+      ev.stopPropagation();
+      const w = target.getAttribute('data-week');
+      const g = groupByWeek().find(x=>x.start===w);
+      if (g) shareText(weekText(g.start,g.days), `Splits — week ${weekLabel(w)}`);
+      return;
+    }
+    const date = target.getAttribute('data-date');
+    if (action==='edit') handleEdit(date);
+    else if (action==='delete') handleDelete(date);
+    else if (action==='share') shareText(entryText(entries.find(e=>e.date===date)), `Splits — ${formatDateShort(date)}`);
+  });
+
+  // ---------- trends ----------
+  function lineChartSVG(dates, seriesList, opts={}){
+    const W=320, H=170, padL=40, padR=10, padT=10, padB=24;
+    const n = dates.length;
+    const allY = seriesList.flatMap(s=>s.data.filter(v=>v!==null && v!==undefined));
+    if (allY.length===0) return '';
+    let minY = Math.min(...allY), maxY = Math.max(...allY);
+    if (opts.zeroBase) minY = Math.min(0, minY);
+    if (minY===maxY){ minY-=1; maxY+=1; }
+    const padY = (maxY-minY)*0.12;
+    minY -= opts.zeroBase ? 0 : padY; maxY += padY;
+    const xFor = i => n<=1 ? padL : padL + (i/(n-1))*(W-padL-padR);
+    const yFor = v => padT + (1-(v-minY)/(maxY-minY))*(H-padT-padB);
+    let svg = '';
+    for(let g=0; g<=4; g++){
+      const v = minY + (g/4)*(maxY-minY), y = yFor(v);
+      svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#D6D8D0" stroke-width="1" stroke-dasharray="3 3"/>`;
+      svg += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="9" fill="#767B70" font-family="Space Grotesk">${opts.yFormatter ? opts.yFormatter(v) : Math.round(v)}</text>`;
+    }
+    const ticks = n<=1 ? [0] : n===2 ? [0,1] : [0, Math.floor((n-1)/2), n-1];
+    ticks.forEach(i=>{ svg += `<text x="${xFor(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="#767B70" font-family="Space Grotesk">${formatDateTiny(dates[i])}</text>`; });
+    seriesList.forEach(s=>{
+      let seg = [];
+      const flush = () => {
+        if (seg.length>1) svg += `<polyline points="${seg.map(p=>`${xFor(p.i)},${yFor(p.y)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+        seg.forEach(p=> svg += `<circle cx="${xFor(p.i)}" cy="${yFor(p.y)}" r="2.6" fill="${s.color}"/>`);
+        seg = [];
+      };
+      s.data.forEach((v,i)=>{ if (v===null||v===undefined) flush(); else seg.push({i,y:v}); });
+      flush();
+    });
+    return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`;
+  }
+  function chartBlock(title, rows, build, need, legend){
+    let html = `<div class="chart-block"><div class="chart-title">${title}</div>${legend||''}`;
+    html += rows.length<2 ? `<div class="empty-msg" style="padding:8px 0;">${need}</div>` : build(rows);
+    return html + `</div>`;
+  }
+  function renderTrends(){
+    const asc = [...entries].sort((a,b)=> a.date<b.date?-1:1);
+    const legend = `<div class="legend"><span><span class="dot" style="background:#B97A1F"></span>in</span><span><span class="dot" style="background:#3F6E68"></span>burned</span></div>`;
+    trendsView.innerHTML =
+      chartBlock('Weight', asc.filter(hasWeight),
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(weightDecimal), color:'#B97A1F'}], {yFormatter: decimalToLabel}),
+        'Log weight on at least two days to see a trend.') +
+      chartBlock('Calories', asc.filter(e=>e.caloriesIn!==null||e.caloriesOut!==null),
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(e=>e.caloriesIn),color:'#B97A1F'},{data:rows.map(e=>e.caloriesOut),color:'#3F6E68'}]),
+        'Log calories on at least two days to see a trend.', legend) +
+      chartBlock('Distance run (km)', asc.filter(e=>e.runKm!==null),
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(e=>e.runKm), color:'#B97A1F'}], {zeroBase:true, yFormatter:v=>fmt1(v)}),
+        'Log a run on at least two days to see a trend.') +
+      chartBlock('Exercise time (min)', asc.filter(e=>exerciseMin(e)!==null),
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(exerciseMin), color:'#3F6E68'}], {zeroBase:true}),
+        'Log exercise time on at least two days to see a trend.');
+  }
+
+  // ---------- backup / restore ----------
+  backupBtn.addEventListener('click', async ()=>{
+    if (entries.length===0){ showToast('Nothing to back up yet.'); return; }
+    const payload = JSON.stringify({app:'splits', version:2, exported:new Date().toISOString(), entries}, null, 2);
+    const name = `splits-backup-${todayStr()}.json`;
+    const file = new File([payload], name, {type:'application/json'});
+    if (navigator.canShare && navigator.canShare({files:[file]})){
+      try { await navigator.share({files:[file], title:'Splits backup'}); return; }
+      catch(e){ if (e && e.name==='AbortError') return; }
+    }
+    downloadBlob(new Blob([payload],{type:'application/json'}), name);
+    showToast('Backup downloaded');
+  });
+  restoreBtn.addEventListener('click', ()=> restoreFile.click());
+  restoreFile.addEventListener('change', ()=>{
+    const f = restoreFile.files && restoreFile.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const list = Array.isArray(data) ? data : data.entries;
+        if (!Array.isArray(list)) throw new Error('bad');
+        const incoming = list.filter(e=>e && /^\d{4}-\d{2}-\d{2}$/.test(e.date)).map(normaliseEntry);
+        if (!confirm(`Restore ${incoming.length} entries? Days already in the log with the same date will be replaced.`)) return;
+        const byDate = new Map(entries.map(e=>[e.date,e]));
+        incoming.forEach(e=> byDate.set(e.date,e));
+        entries = [...byDate.values()];
+        persist(); renderLog(); renderTrendsIfVisible(); goToDate(draft.date);
+        showToast(`Restored ${incoming.length} entries`);
+      } catch(e){ showToast("That file isn't a Splits backup."); }
+      restoreFile.value = '';
+    };
+    reader.readAsText(f);
+  });
+
+  // ---------- init ----------
+  loadEntries();
+  goToDate(todayStr());
+  renderLog();
+</script>
+</body>
+</html>
