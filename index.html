@@ -11,11 +11,34 @@
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap');
 
   :root {
-    --ink:#1C2333; --paper:#EDEFEA; --surface:#F8F8F5; --text:#262B36; --text-muted:#767B70;
+    --ink:#1C2333; --paper:#EDEFEA; --surface:#F8F8F5; --card-bg:#FFFFFF; --text:#262B36; --text-muted:#767B70;
     --amber:#B97A1F; --amber-deep:#96631A; --teal:#3F6E68; --line:#D6D8D0; --danger:#A34B3B;
+    --shadow-ink:#1C2333;
+    color-scheme: light;
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:#EFEDE4; --paper:#161712; --surface:#201F19; --card-bg:#242219; --text:#E6E3D8; --text-muted:#98978A;
+      --amber:#E0A34C; --amber-deep:#EFC080; --teal:#7FB0A6; --line:#3A3A30; --danger:#DC8272;
+      --shadow-ink:#000000;
+      color-scheme: dark;
+    }
+  }
+  html[data-theme="dark"] {
+    --ink:#EFEDE4; --paper:#161712; --surface:#201F19; --card-bg:#242219; --text:#E6E3D8; --text-muted:#98978A;
+    --amber:#E0A34C; --amber-deep:#EFC080; --teal:#7FB0A6; --line:#3A3A30; --danger:#DC8272;
+    --shadow-ink:#000000;
+    color-scheme: dark;
+  }
+  html[data-theme="light"] {
+    --ink:#1C2333; --paper:#EDEFEA; --surface:#F8F8F5; --card-bg:#FFFFFF; --text:#262B36; --text-muted:#767B70;
+    --amber:#B97A1F; --amber-deep:#96631A; --teal:#3F6E68; --line:#D6D8D0; --danger:#A34B3B;
+    --shadow-ink:#1C2333;
+    color-scheme: light;
+  }
+  html, body { background:var(--paper); transition: background-color 150ms ease; }
   * { box-sizing: border-box; }
-  html, body { margin:0; padding:0; background:var(--paper); }
+  html, body { margin:0; padding:0; }
   body { font-family:'Space Grotesk', sans-serif; color:var(--text); -webkit-tap-highlight-color: transparent; }
   header.app-header { padding: 28px 20px 16px; border-bottom: 2px solid var(--amber); }
   .app-title { font-size:24px; font-weight:700; color:var(--ink); }
@@ -28,7 +51,7 @@
   .date-row .input { flex:1; min-width:0; }
   .label { font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px; margin-top:12px; }
   .label.first { margin-top:0; }
-  .input, .textarea { width:100%; background:#fff; border:1px solid var(--line); color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:14px; padding:8px 10px; border-radius:6px; outline:none; }
+  .input, .textarea { width:100%; background:var(--card-bg); border:1px solid var(--line); color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:14px; padding:8px 10px; border-radius:6px; outline:none; }
   .textarea { font-family:'Newsreader',serif; font-style:italic; font-size:15px; resize:vertical; }
   .input:focus, .textarea:focus { border-color:var(--amber); box-shadow:0 0 0 3px rgba(185,122,31,0.15); }
   .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -40,11 +63,52 @@
   .btn-primary:hover { background:var(--amber-deep); }
   .btn-ghost { background:transparent; color:var(--text-muted); font-family:'Space Grotesk',sans-serif; font-size:13px; border:none; padding:8px 6px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
   .icon-btn { background:transparent; border:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--text-muted); display:inline-flex; align-items:center; justify-content:center; }
-  .icon-btn:hover { background:rgba(0,0,0,0.05); color:var(--text); }
-  .nav-btn { background:#fff; border:1px solid var(--line); border-radius:6px; width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; color:var(--text-muted); cursor:pointer; flex-shrink:0; }
+  .icon-btn:hover { background:rgba(127,127,127,0.12); color:var(--text); }
+  .theme-btn { position:relative; }
+  .theme-btn svg.moon { display:none; }
+  html[data-theme="dark"] .theme-btn svg.sun { display:none; }
+  html[data-theme="dark"] .theme-btn svg.moon { display:inline-block; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .theme-btn svg.sun { display:none; }
+    html:not([data-theme="light"]) .theme-btn svg.moon { display:inline-block; }
+  }
+  .nav-btn { background:var(--card-bg); border:1px solid var(--line); border-radius:6px; width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; color:var(--text-muted); cursor:pointer; flex-shrink:0; }
   .nav-btn:hover { color:var(--text); }
 
-  .tabbar { display:flex; align-items:center; gap:18px; margin-top:26px; border-bottom:1px solid var(--line); }
+  .tabbar { display:flex; align-items:center; gap:14px; margin:0 0 16px; border-bottom:1px solid var(--line); }
+  .tab.icon-tab { padding:10px 4px; }
+
+  .pips { display:inline-flex; gap:3px; align-items:center; vertical-align:middle; }
+  .pip { width:12px; height:12px; display:inline-block; flex-shrink:0; }
+  .entry-date .pips { margin-left:6px; }
+
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--card-bg); }
+  .seg button { background:transparent; border:none; padding:6px 12px; font-family:'Space Grotesk',sans-serif; font-size:12px; color:var(--text-muted); cursor:pointer; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button.active { background:var(--ink); color:var(--paper); }
+  .view-tools { display:flex; align-items:center; justify-content:space-between; margin-top:2px; gap:10px; flex-wrap:wrap; }
+
+  .summary { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin:14px 0 16px; padding:12px 14px; background:var(--surface); border-left:3px solid var(--teal); border-radius:6px; }
+  .summary .sv { font-size:16px; font-weight:500; color:var(--ink); line-height:1.3; }
+  .summary .sl { font-size:11px; color:var(--text-muted); margin-top:1px; }
+
+  .cal-head { display:flex; align-items:center; justify-content:space-between; margin-top:2px; }
+  .period-nav { display:flex; align-items:center; justify-content:space-between; margin:12px 0 16px; }
+  .period-nav .cal-month { font-size:14px; }
+  .cal-month { font-weight:500; font-size:15px; color:var(--ink); }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .cal-dow { font-size:11px; color:var(--text-muted); text-align:center; padding-bottom:4px; }
+  .cal-cell { aspect-ratio:1; border-radius:6px; background:var(--card-bg); border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:13px; color:var(--text); padding:0; }
+  .cal-cell:hover { border-color:var(--text-muted); }
+  .cal-cell.blank { background:transparent; border-color:transparent; cursor:default; pointer-events:none; }
+  .cal-cell.logged { background:var(--surface); font-weight:500; }
+  .cal-cell.today { border-color:var(--amber); box-shadow:inset 0 0 0 1px var(--amber); }
+  .cal-cell.future { color:var(--text-muted); }
+  .cal-cell .pips { height:12px; }
+  .cal-key { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:12px; font-size:12px; color:var(--text-muted); align-items:center; }
+  .cal-key span { display:inline-flex; align-items:center; gap:5px; }
+  .link-btn { background:none; border:none; padding:0; font:inherit; color:var(--amber-deep); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  .chart-foot { font-family:'Newsreader',serif; font-style:italic; font-size:13px; color:var(--text-muted); margin-top:6px; }
   .tab { background:transparent; border:none; border-bottom:2px solid transparent; font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--text-muted); padding:10px 2px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
   .tab.active { color:var(--ink); border-bottom-color:var(--amber); font-weight:500; }
 
@@ -79,7 +143,7 @@
   .data-row .note { font-family:'Newsreader',serif; font-style:italic; font-size:12px; color:var(--text-muted); width:100%; }
 
   .hidden { display:none !important; }
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; font-size:13px; padding:10px 16px; border-radius:20px; opacity:0; transition:opacity 200ms ease; pointer-events:none; z-index:10; max-width:90vw; text-align:center; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--shadow-ink); color:var(--paper); font-size:13px; padding:10px 16px; border-radius:20px; opacity:0; transition:opacity 200ms ease; pointer-events:none; z-index:10; max-width:90vw; text-align:center; }
   .toast.show { opacity:1; }
   .error-msg { font-size:12px; color:var(--danger); margin-top:10px; }
   .row { display:flex; }
@@ -94,6 +158,24 @@
 </header>
 
 <main>
+  <div class="tabbar">
+    <button id="tabTracker" class="tab active">Tracker</button>
+    <button id="tabCal" class="tab">Calendar</button>
+    <button id="tabLog" class="tab">Log <span id="entryCount"></span></button>
+    <button id="tabTrends" class="tab">Trends</button>
+    <button id="tabTargets" class="tab icon-tab" style="margin-left:auto;" aria-label="Targets" title="Targets">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <button id="themeBtn" class="tab icon-tab theme-btn" aria-label="Switch to dark mode" title="Light / dark mode">
+      <svg class="sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+    </button>
+    <button id="shareAllBtn" class="tab icon-tab" aria-label="Share all" title="Share all">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+    </button>
+  </div>
+
+  <div id="trackerView">
   <section class="form-card" id="formCard">
     <div class="form-head">
       <span id="formTitle">New entry</span>
@@ -174,18 +256,50 @@
     </div>
     <div id="errorMsg" class="error-msg hidden"></div>
   </section>
-
-  <div class="tabbar">
-    <button id="tabLog" class="tab active">Log <span id="entryCount"></span></button>
-    <button id="tabTrends" class="tab">Trends</button>
-    <button id="shareAllBtn" class="tab" style="margin-left:auto;">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
-      Share all
-    </button>
   </div>
 
+
   <div id="logView"></div>
+  <div id="calView" class="hidden"></div>
   <div id="trendsView" class="hidden"></div>
+
+  <div id="targetsView" class="hidden">
+    <section class="form-card" style="border-left-color:var(--teal);">
+      <div class="form-head"><span>Targets</span></div>
+
+      <label class="label first" for="tCal">Daily calorie limit</label>
+      <div class="suffix-wrap">
+        <input id="tCal" type="number" inputmode="numeric" min="0" class="input" placeholder="e.g. 1800">
+        <span class="suffix">cal</span>
+      </div>
+      <div class="hint">Days at or under this get a teal tick, days over get a red cross. Leave blank to switch the colouring off.</div>
+
+      <label class="label" for="tKm">Weekly running goal</label>
+      <div class="suffix-wrap">
+        <input id="tKm" type="number" inputmode="decimal" min="0" step="0.5" class="input" placeholder="e.g. 15">
+        <span class="suffix">km</span>
+      </div>
+
+      <label class="label">Goal weight</label>
+      <div class="grid-2">
+        <div class="suffix-wrap">
+          <input id="tStone" type="number" inputmode="numeric" min="0" class="input" placeholder="10" aria-label="Goal stone">
+          <span class="suffix">st</span>
+        </div>
+        <div class="suffix-wrap">
+          <input id="tLb" type="number" inputmode="numeric" min="0" max="13" class="input" placeholder="7" aria-label="Goal pounds">
+          <span class="suffix">lb</span>
+        </div>
+      </div>
+      <div class="hint">Shown as a dashed line on the weight chart.</div>
+
+      <div class="hint" style="margin-top:14px;">Exercise counts on any day with exercise time, a run, a walk or calories burned logged. A logged day with none of those shows a red cross.</div>
+
+      <div class="row" style="margin-top:14px; align-items:center; gap:12px;">
+        <button id="tSaveBtn" class="btn-primary">Save targets</button>
+      </div>
+    </section>
+  </div>
 
   <div class="data-row">
     <button id="backupBtn" class="btn-ghost">back up data</button>
@@ -199,6 +313,21 @@
 <script>
   const STORAGE_KEY = 'splits-log-entries-v2';
   const LEGACY_KEY  = 'splits-log-entries-v1';
+  const THEME_KEY = 'splits-log-theme-v1';
+
+  function systemPrefersDark(){ return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+  function applyTheme(mode){
+    if (mode==='light' || mode==='dark') document.documentElement.setAttribute('data-theme', mode);
+    else document.documentElement.removeAttribute('data-theme');
+    const resolved = mode==='light' || mode==='dark' ? mode : (systemPrefersDark() ? 'dark' : 'light');
+    if (themeBtnRef) themeBtnRef.setAttribute('aria-label', resolved==='dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    renderChartsIfNeeded();
+  }
+  function loadTheme(){ try { return localStorage.getItem(THEME_KEY) || 'system'; } catch(e){ return 'system'; } }
+  function saveTheme(mode){ try { localStorage.setItem(THEME_KEY, mode); } catch(e){} }
+  let themeMode = loadTheme();
+  let themeBtnRef = null;
+  function renderChartsIfNeeded(){ if (typeof renderTrends==='function' && currentTab==='trends') renderTrends(); if (typeof renderCal==='function' && currentTab==='cal') renderCal(); }
 
   const ICONS = {
     pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
@@ -238,13 +367,44 @@
       notes: (e.notes||'').trim()
     };
   }
+  function monthStart(s){ return s.slice(0,7)+'-01'; }
+  function monthLabel(start){ return parseDateLocal(start).toLocaleDateString(undefined,{month:'long',year:'numeric'}); }
+  function addMonths(ym,n){ const [y,m]=ym.split('-').map(Number); const d=new Date(y,m-1+n,1); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}`; }
+
+  // ---------- targets ----------
+  const SETTINGS_KEY = 'splits-log-settings-v1';
+  let settings = { calLimit:null, weeklyKm:null, goalStone:null, goalLb:null };
+  function normaliseSettings(s){ s=s||{}; return { calLimit:parseNum(s.calLimit), weeklyKm:parseNum(s.weeklyKm), goalStone:parseNum(s.goalStone), goalLb:parseNum(s.goalLb) }; }
+  function loadSettings(){ try { const raw=localStorage.getItem(SETTINGS_KEY); if (raw) settings = normaliseSettings(JSON.parse(raw)); } catch(e){} }
+  function persistSettings(){ try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); return true; } catch(e){ return false; } }
+  function goalWeightDecimal(){ return (settings.goalStone!==null || settings.goalLb!==null) ? (settings.goalStone||0)+(settings.goalLb||0)/14 : null; }
+
+  // ---------- day verdicts ----------
+  function didExercise(e){ return (exerciseMin(e)||0)>0 || (e.runKm||0)>0 || (e.caloriesOut||0)>0; }
+  function calVerdict(e){ if (settings.calLimit===null || e.caloriesIn===null) return 'none'; return e.caloriesIn<=settings.calLimit ? 'good' : 'over'; }
+  function exVerdict(e){ return didExercise(e) ? 'good' : 'missed'; }
+  function pipSvg(state, label){
+    const bad = state==='over' || state==='missed';
+    const c = state==='good' ? 'var(--teal)' : bad ? 'var(--danger)' : 'var(--text-muted)';
+    const inner = state==='good'
+      ? '<polyline points="3.4 6.3 5.3 8.1 8.7 4.3" fill="none" style="stroke:var(--card-bg)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      : bad ? '<path d="M4.1 4.1l3.8 3.8M7.9 4.1l-3.8 3.8" style="stroke:var(--card-bg)" stroke-width="1.6" stroke-linecap="round"/>' : '';
+    return `<svg class="pip" viewBox="0 0 12 12" role="img" aria-label="${label}"><title>${label}</title><circle cx="6" cy="6" r="5" style="fill:${state==='none'?'none':c};stroke:${c}" stroke-width="1.4"${state==='none'?' stroke-dasharray="2 2"':''}/>${inner}</svg>`;
+  }
+  const CAL_LABELS = { good:'Calories: under target', over:'Calories: over target', none:'Calories: no limit set or not logged' };
+  const EX_LABELS  = { good:'Exercise: logged', missed:'Exercise: none logged' };
+  function dayPips(e){ const c=calVerdict(e), x=exVerdict(e); return `<span class="pips">${pipSvg(c, CAL_LABELS[c])}${pipSvg(x, EX_LABELS[x])}</span>`; }
 
   // ---------- state ----------
   let entries = [];
   let draft = emptyDraft(todayStr());
-  let currentTab = 'log';
+  let currentTab = 'tracker';
   let expandedWeeks = new Set();
   let toastTimer = null;
+  let logGroupMode = 'week';
+  let calMonth = todayStr().slice(0,7);
+  let trendRange = 'all';
+  let trendPeriod = null; // week start (YYYY-MM-DD) or month (YYYY-MM)
 
   function loadEntries(){
     try {
@@ -265,9 +425,20 @@
     exMin=el('exMin'), runKm=el('runKm'), walkMin=el('walkMin'), contMin=el('contMin'), notesInput=el('notesInput'),
     exHint=el('exHint'), formTitle=el('formTitle'), todayBtn=el('todayBtn'), prevDayBtn=el('prevDayBtn'), nextDayBtn=el('nextDayBtn'),
     saveBtn=el('saveBtn'), clearBtn=el('clearBtn'), errorMsg=el('errorMsg'),
-    tabLog=el('tabLog'), tabTrends=el('tabTrends'), shareAllBtn=el('shareAllBtn'),
-    logView=el('logView'), trendsView=el('trendsView'), entryCount=el('entryCount'), toast=el('toast'),
-    backupBtn=el('backupBtn'), restoreBtn=el('restoreBtn'), restoreFile=el('restoreFile');
+    themeBtn=el('themeBtn'), tabTracker=el('tabTracker'), trackerView=el('trackerView'), tabLog=el('tabLog'), tabCal=el('tabCal'), tabTrends=el('tabTrends'), tabTargets=el('tabTargets'), shareAllBtn=el('shareAllBtn'),
+    logView=el('logView'), calView=el('calView'), trendsView=el('trendsView'), targetsView=el('targetsView'), entryCount=el('entryCount'), toast=el('toast'),
+    backupBtn=el('backupBtn'), restoreBtn=el('restoreBtn'), restoreFile=el('restoreFile'),
+    tCal=el('tCal'), tKm=el('tKm'), tStone=el('tStone'), tLb=el('tLb'), tSaveBtn=el('tSaveBtn');
+
+  themeBtnRef = themeBtn;
+  applyTheme(themeMode);
+  themeBtn.addEventListener('click', ()=>{
+    const resolved = themeMode==='light' || themeMode==='dark' ? themeMode : (systemPrefersDark() ? 'dark' : 'light');
+    themeMode = resolved==='dark' ? 'light' : 'dark';
+    saveTheme(themeMode);
+    applyTheme(themeMode);
+  });
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if (themeMode==='system') applyTheme(themeMode); });
 
   function showToast(msg){
     toast.textContent = msg;
@@ -335,9 +506,9 @@
     entries = entries.filter(e=>e.date!==entry.date);
     entries.push(entry);
     const ok = persist();
-    expandedWeeks.add(weekStart(entry.date));
+    expandedWeeks.add(weekStart(entry.date)); expandedWeeks.add(monthStart(entry.date));
     updateFormHeadState();
-    renderLog(); renderTrendsIfVisible();
+    renderViews();
     errorMsg.classList.add('hidden');
     if (!ok){ errorMsg.textContent = "Couldn't save — storage is full or blocked in this browser."; errorMsg.classList.remove('hidden'); return; }
     saveBtn.innerHTML = `${ICONS.check} Saved`;
@@ -345,29 +516,60 @@
   });
 
   // ---------- tabs ----------
+  tabTracker.addEventListener('click', ()=> setTab('tracker'));
   tabLog.addEventListener('click', ()=> setTab('log'));
+  tabCal.addEventListener('click', ()=> setTab('cal'));
   tabTrends.addEventListener('click', ()=> setTab('trends'));
+  tabTargets.addEventListener('click', ()=> setTab('targets'));
   function setTab(t){
     currentTab = t;
+    tabTracker.classList.toggle('active', t==='tracker');
+    trackerView.classList.toggle('hidden', t!=='tracker');
     tabLog.classList.toggle('active', t==='log');
+    tabCal.classList.toggle('active', t==='cal');
     tabTrends.classList.toggle('active', t==='trends');
+    tabTargets.classList.toggle('active', t==='targets');
     logView.classList.toggle('hidden', t!=='log');
+    calView.classList.toggle('hidden', t!=='cal');
     trendsView.classList.toggle('hidden', t!=='trends');
+    targetsView.classList.toggle('hidden', t!=='targets');
+    if (t==='log') renderLog();
+    if (t==='cal') renderCal();
     if (t==='trends') renderTrends();
+    if (t==='targets') syncTargetsForm();
   }
   const renderTrendsIfVisible = () => { if (currentTab==='trends') renderTrends(); };
+  const renderCalIfVisible = () => { if (currentTab==='cal') renderCal(); };
+  function renderViews(){ renderLog(); renderCalIfVisible(); renderTrendsIfVisible(); }
+
+  // ---------- targets form ----------
+  function syncTargetsForm(){
+    tCal.value = settings.calLimit ?? ''; tKm.value = settings.weeklyKm ?? '';
+    tStone.value = settings.goalStone ?? ''; tLb.value = settings.goalLb ?? '';
+  }
+  tSaveBtn.addEventListener('click', ()=>{
+    settings = normaliseSettings({ calLimit:tCal.value, weeklyKm:tKm.value, goalStone:tStone.value, goalLb:tLb.value });
+    const ok = persistSettings();
+    syncTargetsForm();
+    renderLog();
+    if (!ok){ showToast("Couldn't save targets — storage is full or blocked."); return; }
+    tSaveBtn.innerHTML = `${ICONS.check} Saved`;
+    setTimeout(()=> tSaveBtn.innerHTML = 'Save targets', 1600);
+    showToast(settings.calLimit===null ? 'Targets saved. Calorie colouring is off.' : 'Targets saved');
+  });
 
   // ---------- edit / delete ----------
   function handleEdit(date){
     goToDate(date);
-    el('formCard').scrollIntoView({behavior:'smooth'});
+    setTab('tracker');
+    window.scrollTo({top:0, behavior:'smooth'});
   }
   function handleDelete(date){
     if (!confirm(`Delete the entry for ${formatDateShort(date)}?`)) return;
     entries = entries.filter(e=>e.date!==date);
     persist();
     if (draft.date===date) goToDate(date);
-    renderLog(); renderTrendsIfVisible();
+    renderViews();
   }
 
   // ---------- text export ----------
@@ -388,16 +590,21 @@
     if (e.notes) lines.push(e.notes);
     return lines.join('\n');
   }
-  function weekText(start, days){
+  function weekText(start, days){ return periodText(`Week ${weekLabel(start)}`, days); }
+  function periodText(title, days){
     const s = weekSummary(days);
-    const lines = [`Week ${weekLabel(start)}`, `${days.length} day${days.length===1?'':'s'} logged`];
+    const lines = [title, `${days.length} day${days.length===1?'':'s'} logged`];
+    const rate = [];
+    if (s.calGood!==null && s.calDays>0) rate.push(`${s.calGood} of ${s.calDays} days under calorie target`);
+    if (days.length) rate.push(`${s.exDays} of ${days.length} days exercised`);
+    if (rate.length) lines.push(rate.join(', '));
     const a = [];
     if (s.km>0) a.push(`Ran ${fmt1(s.km)} km`);
     if (s.exMin>0) a.push(`Exercise ${s.exMin} min`);
     if (s.walk>0 || s.cont>0) a.push(`(walked ${s.walk}, continuous ${s.cont})`);
     if (a.length) lines.push(a.join('   '));
     if (s.avgIn!==null || s.avgOut!==null) lines.push(`Avg calories ${s.avgIn!==null? s.avgIn+' in':''}${s.avgIn!==null&&s.avgOut!==null?', ':''}${s.avgOut!==null? s.avgOut+' burned':''}`);
-    if (s.wFirst) lines.push(`Weight ${weightLabel(s.wFirst)}${s.wLast && s.wLast!==s.wFirst ? ` → ${weightLabel(s.wLast)} (${s.deltaLb>0?'+':''}${s.deltaLb} lb)` : ''}`);
+    if (s.wFirst) lines.push(`Weight ${weightLabel(s.wFirst)}${s.wChanged ? ` → ${weightLabel(s.wLast)} (${s.deltaLb>0?'+':''}${s.deltaLb} lb)` : ''}`);
     lines.push('');
     days.forEach(d=> lines.push(entryText(d), ''));
     return lines.join('\n').trim();
@@ -433,20 +640,31 @@
     const avg = (fn) => { const v=vals(fn); return v.length ? Math.round(v.reduce((a,b)=>a+b,0)/v.length) : null; };
     const weighed = days.filter(hasWeight);
     const wFirst = weighed[0]||null, wLast = weighed[weighed.length-1]||null;
+    const calDays = days.filter(e=>e.caloriesIn!==null).length;
     return {
       km: sum(e=>e.runKm), exMin: sum(exerciseMin), walk: sum(e=>e.walkMin), cont: sum(e=>e.contRunMin),
       avgIn: avg(e=>e.caloriesIn), avgOut: avg(e=>e.caloriesOut),
-      wFirst, wLast, deltaLb: (wFirst&&wLast) ? Math.round((weightDecimal(wLast)-weightDecimal(wFirst))*14) : 0
+      wFirst, wLast, deltaLb: (wFirst&&wLast) ? Math.round((weightDecimal(wLast)-weightDecimal(wFirst))*14) : 0,
+      calDays, calGood: settings.calLimit!==null ? days.filter(e=>calVerdict(e)==='good').length : null,
+      exDays: days.filter(didExercise).length,
+      wChanged: !!(wFirst && wLast && weightDecimal(wLast)!==weightDecimal(wFirst))
     };
   }
-  function groupByWeek(){
+  function groupByPeriod(mode){
+    const keyFor = mode==='month' ? monthStart : weekStart;
     const map = new Map();
     [...entries].sort((a,b)=> a.date<b.date?-1:1).forEach(e=>{
-      const k = weekStart(e.date);
+      const k = keyFor(e.date);
       if (!map.has(k)) map.set(k, []);
       map.get(k).push(e);
     });
     return [...map.entries()].map(([start,days])=>({start,days})).sort((a,b)=> a.start<b.start?1:-1);
+  }
+  const groupByWeek = () => groupByPeriod('week');
+  function periodTitle(start, mode){
+    const current = mode==='month' ? monthStart(todayStr())===start : weekStart(todayStr())===start;
+    const label = mode==='month' ? monthLabel(start) : weekLabel(start);
+    return { current, label, title: current ? (mode==='month' ? 'This month' : 'This week') : label };
   }
 
   function statSpan(value, unit){ return `<span class="stat-value">${value}${unit?`<span class="stat-label"> ${unit}</span>`:''}</span>`; }
@@ -465,7 +683,7 @@
     return `
       <div class="entry-row">
         <div class="entry-top">
-          <div class="entry-date" data-action="edit" data-date="${e.date}">${formatDateShort(e.date)}</div>
+          <div class="entry-date" data-action="edit" data-date="${e.date}">${formatDateShort(e.date)}${dayPips(e)}</div>
           <div class="entry-actions">
             <button class="icon-btn" data-action="share" data-date="${e.date}" aria-label="Share entry">${ICONS.share}</button>
             <button class="icon-btn" data-action="edit" data-date="${e.date}" aria-label="Edit entry">${ICONS.pencil}</button>
@@ -480,30 +698,41 @@
 
   function renderLog(){
     entryCount.textContent = entries.length>0 ? `(${entries.length})` : '';
-    const groups = groupByWeek();
+    const groups = groupByPeriod(logGroupMode);
     if (groups.length===0){
       logView.innerHTML = `<div class="empty-msg">No entries yet — log today's numbers above to start the log.</div>`;
       return;
     }
-    const thisWeek = weekStart(todayStr());
     if (expandedWeeks.size===0) expandedWeeks.add(groups[0].start);
-    logView.innerHTML = groups.map(g=>{
+    const tools = `
+      <div class="view-tools">
+        <div class="seg" role="group" aria-label="Group log by">
+          <button data-action="group-mode" data-mode="week" class="${logGroupMode==='week'?'active':''}">By week</button>
+          <button data-action="group-mode" data-mode="month" class="${logGroupMode==='month'?'active':''}">By month</button>
+        </div>
+      </div>`;
+    logView.innerHTML = tools + groups.map(g=>{
       const s = weekSummary(g.days);
+      const p = periodTitle(g.start, logGroupMode);
       const open = expandedWeeks.has(g.start);
       const bits = [`${g.days.length} day${g.days.length===1?'':'s'}`];
-      if (s.km>0) bits.push(`${fmt1(s.km)} km`);
-      if (s.exMin>0) bits.push(`${s.exMin} min`);
-      if (s.avgIn!==null) bits.push(`avg ${s.avgIn} cal`);
-      if (s.wFirst && s.wLast && s.wLast!==s.wFirst) bits.push(`${s.deltaLb>0?'+':''}${s.deltaLb} lb`);
+      if (s.calGood!==null && s.calDays>0) bits.push(`${s.calGood}/${s.calDays} under target`);
+      if (g.days.length) bits.push(`${s.exDays}/${g.days.length} exercised`);
+      const line2 = [];
+      if (s.km>0 || (logGroupMode==='week' && settings.weeklyKm)) line2.push(logGroupMode==='week' && settings.weeklyKm ? `${fmt1(s.km)} of ${fmt1(settings.weeklyKm)} km` : `${fmt1(s.km)} km`);
+      if (s.exMin>0) line2.push(`${s.exMin} min`);
+      if (s.avgIn!==null) line2.push(`avg ${s.avgIn} cal`);
+      if (s.wFirst && s.wChanged) line2.push(`${s.deltaLb>0?'+':''}${s.deltaLb} lb`);
+      const sub = [p.current ? p.label : '', bits.join('&nbsp;&nbsp;&nbsp;'), line2.join('&nbsp;&nbsp;&nbsp;')].filter(Boolean).join('<br>');
       return `
         <div class="week">
           <div class="week-head" data-action="toggle-week" data-week="${g.start}">
             <div>
-              <div class="week-title">${g.start===thisWeek ? 'This week' : weekLabel(g.start)}</div>
-              <div class="week-sub">${g.start===thisWeek ? weekLabel(g.start)+'<br>' : ''}${bits.join('&nbsp;&nbsp;&nbsp;')}</div>
+              <div class="week-title">${p.title}</div>
+              <div class="week-sub">${sub}</div>
             </div>
             <div style="display:flex; align-items:center; gap:2px;">
-              <button class="icon-btn" data-action="share-week" data-week="${g.start}" aria-label="Share week">${ICONS.share}</button>
+              <button class="icon-btn" data-action="share-week" data-week="${g.start}" aria-label="Share ${logGroupMode}">${ICONS.share}</button>
               <span class="icon-btn">${ICONS.chev.replace('class="chev"', `class="chev ${open?'open':''}"`)}</span>
             </div>
           </div>
@@ -523,11 +752,19 @@
       if (expandedWeeks.has(w)) expandedWeeks.delete(w); else expandedWeeks.add(w);
       renderLog(); return;
     }
+    if (action==='group-mode'){
+      logGroupMode = target.getAttribute('data-mode');
+      expandedWeeks = new Set();
+      renderLog(); return;
+    }
     if (action==='share-week'){
       ev.stopPropagation();
       const w = target.getAttribute('data-week');
-      const g = groupByWeek().find(x=>x.start===w);
-      if (g) shareText(weekText(g.start,g.days), `Weight Loss Tracker — week ${weekLabel(w)}`);
+      const g = groupByPeriod(logGroupMode).find(x=>x.start===w);
+      if (!g) return;
+      const p = periodTitle(w, logGroupMode);
+      const kind = logGroupMode==='month' ? 'Month' : 'Week';
+      shareText(periodText(`${kind} ${p.label}`, g.days), `Weight Loss Tracker — ${kind.toLowerCase()} ${p.label}`);
       return;
     }
     const date = target.getAttribute('data-date');
@@ -536,12 +773,78 @@
     else if (action==='share') shareText(entryText(entries.find(e=>e.date===date)), `Weight Loss Tracker — ${formatDateShort(date)}`);
   });
 
+  // ---------- calendar ----------
+  function summaryCell(value, label){ return `<div><div class="sv">${value}</div><div class="sl">${label}</div></div>`; }
+  function renderCal(){
+    const first = calMonth+'-01';
+    const d0 = parseDateLocal(first);
+    const daysIn = new Date(d0.getFullYear(), d0.getMonth()+1, 0).getDate();
+    const offset = (d0.getDay()+6)%7;
+    const today = todayStr();
+    const month = entries.filter(e=>e.date.startsWith(calMonth)).sort((a,b)=> a.date<b.date?-1:1);
+    const byDate = new Map(month.map(e=>[e.date,e]));
+    const s = weekSummary(month);
+    const n = month.length;
+
+    const summary = n===0
+      ? `<div class="empty-msg" style="padding:14px 0 10px;">Nothing logged in ${monthLabel(first)} yet. Tap a day to add it.</div>`
+      : `<div class="summary">
+          ${summaryCell(n, `day${n===1?'':'s'} logged`)}
+          ${summaryCell(s.calGood!==null && s.calDays>0 ? `${s.calGood} of ${s.calDays}` : '—', 'days under calorie target')}
+          ${summaryCell(`${s.exDays} of ${n}`, 'days exercised')}
+          ${summaryCell(s.km>0 ? fmt1(s.km)+' km' : '—', 'run this month')}
+          ${s.wFirst ? summaryCell(
+              s.wChanged ? `${weightLabel(s.wFirst)} → ${weightLabel(s.wLast)}` : weightLabel(s.wFirst),
+              s.wChanged ? `weight (${s.deltaLb>0?'+':''}${s.deltaLb} lb)` : 'weight') : ''}
+          ${s.avgIn!==null ? summaryCell(s.avgIn, 'average calories') : ''}
+        </div>`;
+
+    let cells = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+    for (let i=0;i<offset;i++) cells += `<div class="cal-cell blank" aria-hidden="true"></div>`;
+    for (let day=1; day<=daysIn; day++){
+      const ds = `${calMonth}-${pad2(day)}`;
+      const e = byDate.get(ds);
+      const cls = ['cal-cell', e?'logged':'', ds===today?'today':'', ds>today?'future':''].filter(Boolean).join(' ');
+      const pips = e ? dayPips(e) : `<span class="pips"></span>`;
+      cells += `<button class="${cls}" data-action="pick-day" data-date="${ds}" aria-label="${formatDateShort(ds)}${e?', logged':''}"><span>${day}</span>${pips}</button>`;
+    }
+
+    const noLimit = settings.calLimit===null
+      ? `<div class="hint" style="margin-top:10px;">Set a daily calorie limit in <button class="link-btn" data-action="go-targets">Targets</button> to colour the calories pip.</div>` : '';
+
+    calView.innerHTML = `
+      <div class="cal-head">
+        <button class="nav-btn" data-action="cal-prev" aria-label="Previous month"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="cal-month">${monthLabel(first)}</div>
+        <button class="nav-btn" data-action="cal-next" aria-label="Next month"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      ${summary}
+      <div class="cal-grid">${cells}</div>
+      <div class="cal-key">
+        <span>${pipSvg('good','On target')} on target</span>
+        <span>${pipSvg('over','Missed')} missed</span>
+        <span>${pipSvg('none','Not compared')} not compared</span>
+        <span>left pip calories, right pip exercise</span>
+      </div>
+      ${noLimit}`;
+  }
+  calView.addEventListener('click', (ev)=>{
+    const target = ev.target.closest('[data-action]');
+    if (!target) return;
+    const action = target.getAttribute('data-action');
+    if (action==='cal-prev'){ calMonth = addMonths(calMonth,-1); renderCal(); }
+    else if (action==='cal-next'){ calMonth = addMonths(calMonth,1); renderCal(); }
+    else if (action==='pick-day'){ handleEdit(target.getAttribute('data-date')); }
+    else if (action==='go-targets'){ setTab('targets'); }
+  });
+
   // ---------- trends ----------
   function lineChartSVG(dates, seriesList, opts={}){
     const W=320, H=170, padL=40, padR=10, padT=10, padB=24;
     const n = dates.length;
     const allY = seriesList.flatMap(s=>s.data.filter(v=>v!==null && v!==undefined));
     if (allY.length===0) return '';
+    if (opts.targetY!==null && opts.targetY!==undefined) allY.push(opts.targetY);
     let minY = Math.min(...allY), maxY = Math.max(...allY);
     if (opts.zeroBase) minY = Math.min(0, minY);
     if (minY===maxY){ minY-=1; maxY+=1; }
@@ -552,16 +855,21 @@
     let svg = '';
     for(let g=0; g<=4; g++){
       const v = minY + (g/4)*(maxY-minY), y = yFor(v);
-      svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#D6D8D0" stroke-width="1" stroke-dasharray="3 3"/>`;
-      svg += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="9" fill="#767B70" font-family="Space Grotesk">${opts.yFormatter ? opts.yFormatter(v) : Math.round(v)}</text>`;
+      svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" style="stroke:var(--line)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      svg += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="9" style="fill:var(--text-muted)" font-family="Space Grotesk">${opts.yFormatter ? opts.yFormatter(v) : Math.round(v)}</text>`;
     }
     const ticks = n<=1 ? [0] : n===2 ? [0,1] : [0, Math.floor((n-1)/2), n-1];
-    ticks.forEach(i=>{ svg += `<text x="${xFor(i)}" y="${H-6}" text-anchor="middle" font-size="9" fill="#767B70" font-family="Space Grotesk">${formatDateTiny(dates[i])}</text>`; });
+    ticks.forEach(i=>{ const anchor = n>1 && i===0 ? 'start' : n>1 && i===n-1 ? 'end' : 'middle'; svg += `<text x="${xFor(i)}" y="${H-6}" text-anchor="${anchor}" font-size="9" style="fill:var(--text-muted)" font-family="Space Grotesk">${formatDateTiny(dates[i])}</text>`; });
+    if (opts.targetY!==null && opts.targetY!==undefined){
+      const ty = yFor(opts.targetY);
+      svg += `<line x1="${padL}" y1="${ty}" x2="${W-padR}" y2="${ty}" style="stroke:${opts.targetColor||'var(--danger)'}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+      if (opts.targetLabel) svg += `<text x="${W-padR}" y="${ty-4}" text-anchor="end" font-size="9" style="fill:${opts.targetColor||'var(--danger)'}" font-family="Space Grotesk">${opts.targetLabel}</text>`;
+    }
     seriesList.forEach(s=>{
       let seg = [];
       const flush = () => {
-        if (seg.length>1) svg += `<polyline points="${seg.map(p=>`${xFor(p.i)},${yFor(p.y)}`).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-        seg.forEach(p=> svg += `<circle cx="${xFor(p.i)}" cy="${yFor(p.y)}" r="2.6" fill="${s.color}"/>`);
+        if (seg.length>1) svg += `<polyline points="${seg.map(p=>`${xFor(p.i)},${yFor(p.y)}`).join(' ')}" fill="none" style="stroke:${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+        seg.forEach(p=> svg += `<circle cx="${xFor(p.i)}" cy="${yFor(p.y)}" r="${s.pointColor?3.2:2.6}" style="fill:${s.pointColor ? s.pointColor(p.y) : s.color}${s.pointColor?';stroke:var(--card-bg)':''}" stroke-width="1"/>`);
         seg = [];
       };
       s.data.forEach((v,i)=>{ if (v===null||v===undefined) flush(); else seg.push({i,y:v}); });
@@ -569,33 +877,82 @@
     });
     return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`;
   }
-  function chartBlock(title, rows, build, need, legend){
+  function chartBlock(title, rows, build, need, legend, foot){
     let html = `<div class="chart-block"><div class="chart-title">${title}</div>${legend||''}`;
     html += rows.length<2 ? `<div class="empty-msg" style="padding:8px 0;">${need}</div>` : build(rows);
+    if (foot && rows.length>=2) html += `<div class="chart-foot">${foot}</div>`;
     return html + `</div>`;
   }
+  function trendWindow(){
+    if (trendRange==='week'){
+      if (!trendPeriod || trendPeriod.length!==10) trendPeriod = weekStart(todayStr());
+      return { from: trendPeriod, to: addDays(trendPeriod,6), label: weekStart(todayStr())===trendPeriod ? `This week (${weekLabel(trendPeriod)})` : weekLabel(trendPeriod) };
+    }
+    if (trendRange==='month'){
+      if (!trendPeriod || trendPeriod.length!==7) trendPeriod = todayStr().slice(0,7);
+      const d = parseDateLocal(trendPeriod+'-01');
+      const last = new Date(d.getFullYear(), d.getMonth()+1, 0);
+      return { from: trendPeriod+'-01', to: toDateStr(last), label: monthLabel(trendPeriod+'-01') };
+    }
+    return { from:null, to:null, label:'' };
+  }
   function renderTrends(){
-    const asc = [...entries].sort((a,b)=> a.date<b.date?-1:1);
-    const legend = `<div class="legend"><span><span class="dot" style="background:#B97A1F"></span>in</span><span><span class="dot" style="background:#3F6E68"></span>burned</span></div>`;
-    trendsView.innerHTML =
-      chartBlock('Weight', asc.filter(hasWeight),
-        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(weightDecimal), color:'#B97A1F'}], {yFormatter: decimalToLabel}),
-        'Log weight on at least two days to see a trend.') +
+    const w = trendWindow();
+    const asc = [...entries].filter(e=> (!w.from || e.date>=w.from) && (!w.to || e.date<=w.to)).sort((a,b)=> a.date<b.date?-1:1);
+    const nav = trendRange==='all' ? '' : `
+      <div class="period-nav">
+        <button class="nav-btn" data-nav="-1" aria-label="Previous ${trendRange}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div class="cal-month">${w.label}</div>
+        <button class="nav-btn" data-nav="1" aria-label="Next ${trendRange}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>`;
+    const seg = `
+      <div class="view-tools">
+        <div class="seg" role="group" aria-label="Trend range">
+          <button data-range="week" class="${trendRange==='week'?'active':''}">Week</button>
+          <button data-range="month" class="${trendRange==='month'?'active':''}">Month</button>
+          <button data-range="all" class="${trendRange==='all'?'active':''}">All time</button>
+        </div>
+      </div>${nav}`;
+    const legend = `<div class="legend"><span><span class="dot" style="background:var(--amber)"></span>in</span><span><span class="dot" style="background:var(--teal)"></span>burned</span>${settings.calLimit!==null ? `<span><span class="dot" style="background:var(--danger)"></span>limit ${settings.calLimit}</span>` : ''}</div>`;
+    const goal = goalWeightDecimal();
+    const weighed = asc.filter(hasWeight);
+    let weightFoot = '';
+    if (goal!==null && weighed.length){
+      const toGo = Math.round((weightDecimal(weighed[weighed.length-1]) - goal)*14);
+      weightFoot = toGo<=0 ? 'Goal weight reached.' : `${toGo} lb to your goal of ${decimalToLabel(goal).replace('st', 'st ')}lb.`;
+    }
+    const emptyRange = asc.length===0 && entries.length>0 ? `<div class="empty-msg">Nothing logged in this ${trendRange==='all'?'range':trendRange}.</div>` : '';
+    trendsView.innerHTML = seg + emptyRange +
+      chartBlock('Weight', weighed,
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(weightDecimal), color:'var(--amber)'}], {yFormatter: decimalToLabel, targetY: goal, targetColor:'var(--teal)', targetLabel: goal!==null ? 'goal' : ''}),
+        'Log weight on at least two days to see a trend.', '', weightFoot) +
       chartBlock('Calories', asc.filter(e=>e.caloriesIn!==null||e.caloriesOut!==null),
-        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(e=>e.caloriesIn),color:'#B97A1F'},{data:rows.map(e=>e.caloriesOut),color:'#3F6E68'}]),
+        rows => lineChartSVG(rows.map(e=>e.date), [
+            {data:rows.map(e=>e.caloriesIn), color:'#B97A1F', pointColor: settings.calLimit!==null ? (v=> v<=settings.calLimit ? 'var(--teal)' : 'var(--danger)') : null},
+            {data:rows.map(e=>e.caloriesOut), color:'var(--teal)'}
+          ], {targetY: settings.calLimit}),
         'Log calories on at least two days to see a trend.', legend) +
       chartBlock('Distance run (km)', asc.filter(e=>e.runKm!==null),
         rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(e=>e.runKm), color:'#B97A1F'}], {zeroBase:true, yFormatter:v=>fmt1(v)}),
         'Log a run on at least two days to see a trend.') +
       chartBlock('Exercise time (min)', asc.filter(e=>exerciseMin(e)!==null),
-        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(exerciseMin), color:'#3F6E68'}], {zeroBase:true}),
+        rows => lineChartSVG(rows.map(e=>e.date), [{data:rows.map(exerciseMin), color:'var(--teal)'}], {zeroBase:true}),
         'Log exercise time on at least two days to see a trend.');
   }
+  trendsView.addEventListener('click', (ev)=>{
+    const r = ev.target.closest('[data-range]');
+    if (r){ trendRange = r.getAttribute('data-range'); trendPeriod = null; renderTrends(); return; }
+    const n = ev.target.closest('[data-nav]');
+    if (!n) return;
+    const step = Number(n.getAttribute('data-nav'));
+    trendPeriod = trendRange==='week' ? addDays(trendPeriod, 7*step) : addMonths(trendPeriod, step);
+    renderTrends();
+  });
 
   // ---------- backup / restore ----------
   backupBtn.addEventListener('click', async ()=>{
     if (entries.length===0){ showToast('Nothing to back up yet.'); return; }
-    const payload = JSON.stringify({app:'weight-loss-tracker', version:2, exported:new Date().toISOString(), entries}, null, 2);
+    const payload = JSON.stringify({app:'weight-loss-tracker', version:2, exported:new Date().toISOString(), entries, settings}, null, 2);
     const name = `weight-loss-tracker-backup-${todayStr()}.json`;
     const file = new File([payload], name, {type:'application/json'});
     if (navigator.canShare && navigator.canShare({files:[file]})){
@@ -620,7 +977,9 @@
         const byDate = new Map(entries.map(e=>[e.date,e]));
         incoming.forEach(e=> byDate.set(e.date,e));
         entries = [...byDate.values()];
-        persist(); renderLog(); renderTrendsIfVisible(); goToDate(draft.date);
+        persist();
+        if (data.settings && typeof data.settings==='object'){ settings = normaliseSettings(data.settings); persistSettings(); syncTargetsForm(); }
+        renderViews(); goToDate(draft.date);
         showToast(`Restored ${incoming.length} entries`);
       } catch(e){ showToast("That file isn't a Weight Loss Tracker backup."); }
       restoreFile.value = '';
@@ -630,6 +989,8 @@
 
   // ---------- init ----------
   loadEntries();
+  loadSettings();
+  syncTargetsForm();
   goToDate(todayStr());
   renderLog();
 </script>
