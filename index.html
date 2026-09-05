@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Splits">
-<title>Splits — daily log</title>
+<meta name="apple-mobile-web-app-title" content="Weight Loss Tracker">
+<title>Weight Loss Tracker — daily log</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap');
 
@@ -89,7 +89,7 @@
 </head>
 <body>
 <header class="app-header">
-  <div class="app-title">Splits</div>
+  <div class="app-title">Weight Loss Tracker</div>
   <div class="app-tag">calories, weight and running — logged daily</div>
 </header>
 
@@ -405,14 +405,14 @@
   async function shareText(text, title){
     if (!text){ showToast('Nothing to share yet.'); return; }
     if (navigator.share){
-      try { await navigator.share({title: title||'Splits log', text}); return; }
+      try { await navigator.share({title: title||'Weight Loss Tracker log', text}); return; }
       catch(e){ if (e && e.name==='AbortError') return; }
     }
     if (navigator.clipboard && navigator.clipboard.writeText){
       try { await navigator.clipboard.writeText(text); showToast('Copied. The share sheet only appears when the app is opened from an https link.'); return; }
       catch(e){}
     }
-    downloadBlob(new Blob([text],{type:'text/plain'}), 'splits-log.txt');
+    downloadBlob(new Blob([text],{type:'text/plain'}), 'weight-loss-tracker-log.txt');
     showToast('Downloaded as a text file');
   }
   function downloadBlob(blob, name){
@@ -423,7 +423,7 @@
   }
   shareAllBtn.addEventListener('click', ()=>{
     const groups = groupByWeek();
-    shareText(groups.map(g=>weekText(g.start,g.days)).join('\n\n\n'), 'Splits log');
+    shareText(groups.map(g=>weekText(g.start,g.days)).join('\n\n\n'), 'Weight Loss Tracker log');
   });
 
   // ---------- weeks ----------
@@ -527,13 +527,13 @@
       ev.stopPropagation();
       const w = target.getAttribute('data-week');
       const g = groupByWeek().find(x=>x.start===w);
-      if (g) shareText(weekText(g.start,g.days), `Splits — week ${weekLabel(w)}`);
+      if (g) shareText(weekText(g.start,g.days), `Weight Loss Tracker — week ${weekLabel(w)}`);
       return;
     }
     const date = target.getAttribute('data-date');
     if (action==='edit') handleEdit(date);
     else if (action==='delete') handleDelete(date);
-    else if (action==='share') shareText(entryText(entries.find(e=>e.date===date)), `Splits — ${formatDateShort(date)}`);
+    else if (action==='share') shareText(entryText(entries.find(e=>e.date===date)), `Weight Loss Tracker — ${formatDateShort(date)}`);
   });
 
   // ---------- trends ----------
@@ -595,11 +595,11 @@
   // ---------- backup / restore ----------
   backupBtn.addEventListener('click', async ()=>{
     if (entries.length===0){ showToast('Nothing to back up yet.'); return; }
-    const payload = JSON.stringify({app:'splits', version:2, exported:new Date().toISOString(), entries}, null, 2);
-    const name = `splits-backup-${todayStr()}.json`;
+    const payload = JSON.stringify({app:'weight-loss-tracker', version:2, exported:new Date().toISOString(), entries}, null, 2);
+    const name = `weight-loss-tracker-backup-${todayStr()}.json`;
     const file = new File([payload], name, {type:'application/json'});
     if (navigator.canShare && navigator.canShare({files:[file]})){
-      try { await navigator.share({files:[file], title:'Splits backup'}); return; }
+      try { await navigator.share({files:[file], title:'Weight Loss Tracker backup'}); return; }
       catch(e){ if (e && e.name==='AbortError') return; }
     }
     downloadBlob(new Blob([payload],{type:'application/json'}), name);
@@ -622,7 +622,7 @@
         entries = [...byDate.values()];
         persist(); renderLog(); renderTrendsIfVisible(); goToDate(draft.date);
         showToast(`Restored ${incoming.length} entries`);
-      } catch(e){ showToast("That file isn't a Splits backup."); }
+      } catch(e){ showToast("That file isn't a Weight Loss Tracker backup."); }
       restoreFile.value = '';
     };
     reader.readAsText(f);
